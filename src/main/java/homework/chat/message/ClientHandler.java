@@ -52,7 +52,6 @@ public class ClientHandler {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    server.broadcastUserDisconnected(ClientHandler.this);
                     server.unsubscribeClient(ClientHandler.this);
                 } catch (IOException e) {
                     e.printStackTrace();

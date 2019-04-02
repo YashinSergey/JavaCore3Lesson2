@@ -53,8 +53,6 @@ public class Network implements Closeable {
                                     MessageCreator msg = new MessageCreator(matcher.group(1), username,
                                             matcher.group(2));
                                     messageSender.submitMessage(msg);
-                                } else if (text.startsWith(USER_LIST_PATTERN)) {
-                                    // TODO обновить список подключенных пользователей
                                 }
                             }
                         });

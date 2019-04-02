@@ -88,7 +88,12 @@ public class LogInDialog extends JDialog {
         timer = new Timer(30000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.dispose();
+                if(!connected){
+                    parent.dispose();
+                } else{
+                    return;
+                }
+
             }
         });
 

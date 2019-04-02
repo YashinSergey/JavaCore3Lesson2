@@ -17,13 +17,10 @@ import java.util.regex.Pattern;
 public class ChatServer {
 
     private static final Pattern AUTH_PATTERN = Pattern.compile("^/auth (\\w+) (\\w+)$");
-    private static final String USER_CONNECTED_PATTERN = "/userconn";
-    private static final String USER_DISCONNECTED_PATTERN = "/userdisconn";
     private Authorization authService = new AuthorizationService();
     private Map<String, ClientHandler> clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
     private DataInputStream inp;
     private DataOutputStream out;
-    private ClientHandler clientHandler;
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -43,7 +40,6 @@ public class ChatServer {
                             clientHandlerMap.put(username, new ClientHandler(username, socket, this));
                             out.writeUTF("/auth is successful");
                             out.flush();
-                            broadcastUserConnected(username);
                             System.out.printf("Authorization for user %s is successful%n", username);
                         } else {
                             System.out.printf("Authorization for user %s is failed%n", username);
@@ -85,14 +81,6 @@ public class ChatServer {
 
     public void unsubscribeClient(ClientHandler clientHandler) {
         clientHandlerMap.remove(clientHandler.getUsername());
-        broadcastUserDisconnected(clientHandler);
     }
 
-    public void broadcastUserConnected(String username) {
-        // TODO сообщать всем о том, что конкретный пользователь подключился
-    }
-
-    public void broadcastUserDisconnected(ClientHandler clientHandler) {
-        // TODO сообщать о том, что конкретный пользователь отключился
-    }
 }

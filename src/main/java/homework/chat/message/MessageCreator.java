@@ -16,6 +16,7 @@ public class MessageCreator {
         this.date = LocalDate.now();
     }
 
+
     public String getUserFrom() {
         return userFrom;
     }

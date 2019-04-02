@@ -70,6 +70,7 @@ public class Network implements Closeable {
         sendMessage(String.format(MESSAGE_SEND_PATTERN, message.getUserTo(), message.getMessage()));
     }
 
+
     public void sendMessage(String msg){
         try{
             out.writeUTF(msg);

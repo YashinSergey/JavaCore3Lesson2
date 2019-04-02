@@ -9,7 +9,6 @@ import homework.chat.message.MessageSender;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.nimbus.State;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -47,22 +46,23 @@ public class MainWindow extends JFrame implements MessageSender {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userTo = userList.getSelectedValue();
+                String text = textField.getText();
+                if (text == null || text.trim().isEmpty()) {
+                    return;
+                }
                 if (userTo == null) {
                     JOptionPane.showMessageDialog(MainWindow.this,
                             "Не указан получатель",
                             "Отправка сообщения",
                             JOptionPane.ERROR_MESSAGE);
                     return;
+                } else if(userTo.equals("To all")){
+                    sendMessageToAll();
+                } else {
+                    MessageCreator msg = new MessageCreator(network.getUsername(), userTo, text.trim());
+                    submitMessage(msg);
+                    network.sendMessageToUser(msg);
                 }
-
-                String text = textField.getText();
-                if (text == null || text.trim().isEmpty()) {
-                    return;
-                }
-
-                MessageCreator msg = new MessageCreator(network.getUsername(), userTo, text.trim());
-                submitMessage(msg);
-                network.sendMessageToUser(msg);
             }
         });
 
@@ -77,21 +77,23 @@ public class MainWindow extends JFrame implements MessageSender {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     String userTo = userList.getSelectedValue();
+                    String text = textField.getText();
+                    if (text == null || text.trim().isEmpty()) {
+                        return;
+                    }
                     if (userTo == null) {
                         JOptionPane.showMessageDialog(MainWindow.this,
                                 "Не указан получатель",
                                 "Отправка сообщения",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
+                    } else if(userTo.equals("To all")){
+                        sendMessageToAll();
+                    } else {
+                        MessageCreator msg = new MessageCreator(network.getUsername(), userTo, text.trim());
+                        submitMessage(msg);
+                        network.sendMessageToUser(msg);
                     }
-                    String text = textField.getText();
-                    if (text == null || text.trim().isEmpty()) {
-                        return;
-                    }
-
-                    MessageCreator msg = new MessageCreator(network.getUsername(), userTo, text.trim());
-                    submitMessage(msg);
-                    network.sendMessageToUser(msg);
                 }
             }
         });
@@ -190,6 +192,27 @@ public class MainWindow extends JFrame implements MessageSender {
             while (res.next()) {
                 userListModel.add(userListModel.size(), res.getString("nickname"));
                 userList.ensureIndexIsVisible(userListModel.size() - 1);
+            }
+            userListModel.add(userListModel.size(), "To all");
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageToAll(){
+        Connection connection;
+        Statement statement;
+        String text = textField.getText();
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:chatUsers.db");
+            statement = connection.createStatement();
+            ResultSet res = statement.executeQuery("SELECT nickname FROM users");
+            while (res.next()){
+                MessageCreator msg = new MessageCreator(network.getUsername(), res.getString("nickname"),
+                        text.trim());
+                submitMessage(msg);
+                network.sendMessageToUser(msg);
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

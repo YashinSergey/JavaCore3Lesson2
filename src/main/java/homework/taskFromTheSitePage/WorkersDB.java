@@ -1,4 +1,4 @@
-package homework;
+package homework.taskFromTheSitePage;
 
 
 import java.sql.*;

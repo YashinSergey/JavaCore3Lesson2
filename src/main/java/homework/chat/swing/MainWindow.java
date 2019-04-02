@@ -9,9 +9,11 @@ import homework.chat.message.MessageSender;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.nimbus.State;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.sql.*;
 
 public class MainWindow extends JFrame implements MessageSender {
 
@@ -116,10 +118,8 @@ public class MainWindow extends JFrame implements MessageSender {
         userList.setForeground(new Color(255,255,255));
         userList.setPreferredSize(new Dimension(70,0));
         add(userList, BorderLayout.EAST);
-        addUser("john");
-        addUser("valery");
-        addUser("bob");
-        addUser("jenifer");
+        addUser();
+
         userList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -179,13 +179,20 @@ public class MainWindow extends JFrame implements MessageSender {
     }
 
     @Override
-    public void addUser(String user){
-       SwingUtilities.invokeLater(new Runnable() {
-           @Override
-           public void run() {
-               userListModel.add(userListModel.size(), user);
-               userList.ensureIndexIsVisible(userListModel.size() - 1);
-           }
-       });
+    public void addUser(){
+        Connection connection;
+        Statement statement;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:chatUsers.db");
+            statement = connection.createStatement();
+            ResultSet res = statement.executeQuery("SELECT * FROM users");
+            while (res.next()) {
+                userListModel.add(userListModel.size(), res.getString("nickname"));
+                userList.ensureIndexIsVisible(userListModel.size() - 1);
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

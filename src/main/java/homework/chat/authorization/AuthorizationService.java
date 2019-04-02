@@ -1,24 +1,25 @@
 package homework.chat.authorization;
 
+import homework.chat.connectToDatabase.ConnectToDB;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AuthorizationService implements Authorization {
 
-    private static Connection connection;
-    private static Statement statement;
 
     public Map<String, String> users = new HashMap<>();
 
+
     public AuthorizationService() {
         try {
-            connect();
-            ResultSet res = statement.executeQuery("SELECT * FROM users");
+            ConnectToDB.connect();
+            ResultSet res = ConnectToDB.getStatement().executeQuery("SELECT * FROM users");
             while (res.next()) {
                 users.put(res.getString("nickname"), res.getString("password"));
             }
-            disconnect();
+            ConnectToDB.disconnect();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -34,21 +35,5 @@ public class AuthorizationService implements Authorization {
         return psw != null && psw.equals(password);
     }
 
-    public static void connect() throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:chatUsers.db");
-            statement = connection.createStatement();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void disconnect() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

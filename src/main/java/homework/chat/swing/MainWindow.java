@@ -1,6 +1,7 @@
 package homework.chat.swing;
 
 
+import homework.chat.connectToDatabase.ConnectToDB;
 import homework.chat.network.Network;
 import homework.chat.message.MessageCellRenderer;
 import homework.chat.message.MessageCreator;
@@ -182,40 +183,34 @@ public class MainWindow extends JFrame implements MessageSender {
 
     @Override
     public void addUser(){
-        Connection connection;
-        Statement statement;
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:chatUsers.db");
-            statement = connection.createStatement();
-            ResultSet res = statement.executeQuery("SELECT * FROM users");
+            ConnectToDB.connect();
+            ResultSet res = ConnectToDB.getStatement().executeQuery("SELECT * FROM users");
             while (res.next()) {
                 userListModel.add(userListModel.size(), res.getString("nickname"));
                 userList.ensureIndexIsVisible(userListModel.size() - 1);
             }
             userListModel.add(userListModel.size(), "To all");
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+        ConnectToDB.disconnect();
     }
 
     public void sendMessageToAll(){
-        Connection connection;
-        Statement statement;
         String text = textField.getText();
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:chatUsers.db");
-            statement = connection.createStatement();
-            ResultSet res = statement.executeQuery("SELECT nickname FROM users");
+            ConnectToDB.connect();
+            ResultSet res = ConnectToDB.getStatement().executeQuery("SELECT nickname FROM users");
             while (res.next()){
                 MessageCreator msg = new MessageCreator(network.getUsername(), res.getString("nickname"),
                         text.trim());
                 submitMessage(msg);
                 network.sendMessageToUser(msg);
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+        ConnectToDB.disconnect();
     }
 }

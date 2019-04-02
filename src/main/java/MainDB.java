@@ -4,128 +4,120 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class MainDB {
+
     private static Connection connection;
-    private static Statement stmt;
-    private static PreparedStatement pstmt;
+    private static Statement statement;
+    private static PreparedStatement prStatement;
 
     public static void main(String[] args) {
-
         try {
             connect();
 
-//            ResultSet rs = stmt.executeQuery("SELECT * FROM students where id > 0");
-//            ResultSetMetaData rsmd = rs.getMetaData();
+//            ResultSet res = statement.executeQuery("SELECT * FROM students WHERE id > 1");
+//            ResultSetMetaData resmd = res.getMetaData();
+//            System.out.println(resmd.getColumnName(1) + " " + resmd.getColumnName(2) + " " +
+//                    resmd.getColumnName(3));
 //
-//            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-//                System.out.println(rsmd.getColumnName(i) + " " + rsmd.getColumnType(i));
+//            for (int i = 1; i <= resmd.getColumnCount(); i++) {
+//                System.out.println(resmd.getColumnName(i) + " " + resmd.getColumnTypeName(i));
 //            }
 //
-//            while (rs.next()) {
-//                System.out.println(rs.getInt(1) + " " + rs.getString("name"));
+//            while (res.next()){
+//                System.out.println(String.format("%d %s %d",res.getInt(1),
+//                        res.getString("name"), res.getInt("score")));
 //            }
 
-//            stmt.executeUpdate("CREATE TABLE students " +
-//                    "( id INTEGER PRIMARY KEY AUTOINCREMENT," +
-//                    "name TEXT," +
+//            int update = statement.executeUpdate("INSERT INTO students (name, score) VALUES('bob5', '250')");
+//            System.out.println(update); // Выводит на экран количество изменений, внесённых в БД
+//            int delete = statement.executeUpdate("DELETE FROM students WHERE id > 3");
+//            System.out.println(delete);
+//            int drop = statement.executeUpdate("DROP TABLE IF EXISTS students");
+
+//            statement.executeUpdate("CREATE TABLE IF NOT EXISTS  students " +
+//                    "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE," +
+//                    "name TEXT, " +
 //                    "score TEXT)");
 
 
-
-
 //            connection.setAutoCommit(false);
-//
-//            long t = System.currentTimeMillis();
-//            for (int i = 0; i < 1000; i++) {
-//                stmt.addBatch("INSERT INTO students (name, score)\n" +
-//                        "values ('unknow', 100)");
-//            }
-//            stmt.executeBatch();
-//
-//            connection.setAutoCommit(true);
+////            long t = System.currentTimeMillis();
+////            for (int i = 0; i < 1000; i++) {
+//////                statement.executeUpdate("INSERT INTO students (name, score)" +
+//////                        "VALUES('LiluDalas', 'multiPasport')");
+////                statement.addBatch("INSERT INTO students (name, score)" +
+////                        "VALUES('LiluDalas', 'multiPasport')");
+////            }
+////            statement.executeBatch();
+////            connection.setAutoCommit(true);
+////            System.out.println(System.currentTimeMillis() - t);
 
-//            System.out.println(System.currentTimeMillis() - t);
-
-
-
-//            pstmt = connection.prepareStatement("INSERT INTO students (name, score)\n" +
-//                    "values (?,?)");
+//            prStatement = connection.prepareStatement("INSERT INTO students (name, score)" +
+//                            "VALUES(?,?)");
 //
 //            for (int i = 0; i < 10; i++) {
-//                pstmt.setString(1, "Bob" + (i));
-//                pstmt.setString(2, " " + (i * 10));
-//                pstmt.addBatch();
+//                prStatement.setString(1, "Bob" + i);
+//                prStatement.setString(2,"" + (i * 10));
+//                prStatement.addBatch();
 //            }
-//            pstmt.executeBatch();
+//            prStatement.executeBatch();
 
 
-//            stmt.executeUpdate("INSERT INTO students (name, score)\n" +
-//                    "values ('Bob1', 10)");
+//            statement.executeUpdate("INSERT INTO students (name, score)" +
+//                            "VALUES('Bob1',10)");
 //
-//            Savepoint sp = connection.setSavepoint();
+//            Savepoint savepoint = connection.setSavepoint();
 //
+//            statement.executeUpdate("INSERT INTO students (name, score)" +
+//                            "VALUES('Bob2',20)");
 //
-//            stmt.executeUpdate("INSERT INTO students (name, score)\n" +
-//                    "values ('Bob2', 20)");
-//
-//            connection.rollback(sp);
+//            connection.rollback(savepoint); // при вызове Savepoint() отключается AutoCommit
 //            connection.setAutoCommit(true);
 //
-//            stmt.executeUpdate("INSERT INTO students (name, score)\n" +
-//                    "values ('Bob3', 30)");
+//            statement.executeUpdate("INSERT INTO students (name, score)" +
+//                            "VALUES('Bob3',30)");
 
-            try {
-                readFile();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            readFile();
 
-            // DELETE - удаляет
-            // DROP - удаляет таблицу
-            // TRUNCATE - удаляет (транзакция)
 
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+            // DELETE - удаляет наполнение таблицы (очищает таблицу)
+            // DROP - удаляет таблицу и её элементы
+            // TRUNCATE - удаляет наполнение таблицы (одной транзакцией) // в sqlite нет этой команды
+
+        } catch (ClassNotFoundException | SQLException | FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        // work to db
-
     }
 
-
-    public static void readFile() throws FileNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream("D:\\Users\\Artem\\Desktop\\test\\update.txt");
+    public static void readFile() throws FileNotFoundException, SQLException {
+            FileInputStream fileInputStream = new FileInputStream("F:\\Java\\test.txt");
         Scanner scanner = new Scanner(fileInputStream);
-
-        while (scanner.hasNext()) {
-            String[] mass = scanner.nextLine().split(" ");
-            try {
-                updateDB(mass[0], mass[1]);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        while (scanner.hasNext()){
+            String[] arr = scanner.nextLine().split(" ");
+            updateDB(arr[0],arr[1]);
         }
     }
 
     public static void updateDB(String id, String newValue) throws SQLException {
-        String sql = String.format("UPDATE students SET score = %s where id = %s", newValue, id);
-        stmt.executeUpdate(sql);
+        String str = String.format("UPDATE students SET score = %s where id = %s", newValue,id);
+        statement.executeUpdate(str);
     }
+
 
     public static void connect() throws ClassNotFoundException, SQLException {
-
         Class.forName("org.sqlite.JDBC");
         connection = DriverManager.getConnection("jdbc:sqlite:usersDB.db");
-        stmt = connection.createStatement();
+        statement = connection.createStatement();
 
     }
 
-    public static void disconnect() {
+    public static void disconnect(){
         try {
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+
 }

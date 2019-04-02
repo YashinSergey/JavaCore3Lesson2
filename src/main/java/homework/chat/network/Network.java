@@ -1,4 +1,4 @@
-package homework.chat;
+package homework.chat.network;
 
 
 import homework.chat.exceptions.MyAuthorizationException;

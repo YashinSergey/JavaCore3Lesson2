@@ -1,8 +1,7 @@
-package ru.geekbrains.classes.lesson8;
+package homework.chat;
 
 
-
-import ru.geekbrains.classes.lesson8.swing.MainWindow;
+import homework.chat.swing.MainWindow;
 
 import javax.swing.*;
 

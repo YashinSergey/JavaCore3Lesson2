@@ -1,8 +1,9 @@
-package ru.geekbrains.classes.lesson8.swing;
+package homework.chat.swing;
 
 
-import ru.geekbrains.classes.lesson8.Network;
-import ru.geekbrains.classes.lesson8.exceptions.MyAuthorizationException;
+
+import homework.chat.network.Network;
+import homework.chat.exceptions.MyAuthorizationException;
 
 import javax.swing.*;
 import java.awt.*;

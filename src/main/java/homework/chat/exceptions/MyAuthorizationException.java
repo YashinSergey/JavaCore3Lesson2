@@ -1,4 +1,4 @@
-package ru.geekbrains.classes.lesson8.exceptions;
+package homework.chat.exceptions;
 
 public class MyAuthorizationException extends RuntimeException {
 

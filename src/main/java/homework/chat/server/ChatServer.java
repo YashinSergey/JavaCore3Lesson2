@@ -1,4 +1,4 @@
-package homework.chat;
+package homework.chat.server;
 
 
 import homework.chat.authorization.Authorization;
@@ -24,11 +24,6 @@ public class ChatServer {
     private DataInputStream inp;
     private DataOutputStream out;
     private ClientHandler clientHandler;
-
-    public static void main(String[] args) {
-        ChatServer chatServer = new ChatServer();
-        chatServer.start(7777);
-    }
 
     public void start(int port) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {

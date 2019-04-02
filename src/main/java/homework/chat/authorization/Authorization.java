@@ -1,4 +1,4 @@
-package ru.geekbrains.classes.lesson8.authorization;
+package homework.chat.authorization;
 
 public interface Authorization {
 

@@ -1,6 +1,7 @@
-package ru.geekbrains.classes.lesson8.message;
+package homework.chat.message;
 
-import ru.geekbrains.classes.lesson8.ChatServer;
+
+import homework.chat.server.ChatServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

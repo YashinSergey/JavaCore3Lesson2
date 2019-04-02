@@ -1,4 +1,4 @@
-package ru.geekbrains.classes.lesson8.message;
+package homework.chat.message;
 
 import java.time.LocalDate;
 

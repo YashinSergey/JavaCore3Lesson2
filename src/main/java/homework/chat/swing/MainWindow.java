@@ -1,9 +1,10 @@
-package ru.geekbrains.classes.lesson8.swing;
+package homework.chat.swing;
 
-import ru.geekbrains.classes.lesson8.Network;
-import ru.geekbrains.classes.lesson8.message.MessageCellRenderer;
-import ru.geekbrains.classes.lesson8.message.MessageCreator;
-import ru.geekbrains.classes.lesson8.message.MessageSender;
+
+import homework.chat.network.Network;
+import homework.chat.message.MessageCellRenderer;
+import homework.chat.message.MessageCreator;
+import homework.chat.message.MessageSender;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -27,6 +28,7 @@ public class MainWindow extends JFrame implements MessageSender {
 
 
     public MainWindow(){
+        setTitle("Chat");
         setBounds(600,250,550,600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
